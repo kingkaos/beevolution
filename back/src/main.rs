@@ -5,6 +5,7 @@ use log::{info, LevelFilter};
 use simple_logger::SimpleLogger;
 
 mod app;
+mod database;
 
 fn main() {
     SimpleLogger::new()
