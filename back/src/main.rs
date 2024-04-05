@@ -6,6 +6,7 @@ use simple_logger::SimpleLogger;
 
 mod app;
 mod database;
+mod store;
 
 fn main() {
     SimpleLogger::new()
