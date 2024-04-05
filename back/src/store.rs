@@ -11,7 +11,7 @@ fn touch(path: &Path) -> io::Result<()> {
     }
 }
 
-fn check_store_file() -> bool {
+pub fn init_store_file() -> bool {
     // default location of the store is ~/.config/beevolution/config.json
     // The path and file will be created if they do not exist.
     let home = env::var("HOME").unwrap();
@@ -37,8 +37,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_check_store_file() {
+    fn test_init_store_file() {
         // store file is created upon calling check_store_file()
-        assert_eq!(check_store_file(), true);
+        assert_eq!(init_store_file(), true);
     }
 }
