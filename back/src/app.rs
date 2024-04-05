@@ -1,5 +1,6 @@
 use tauri::{
-    AboutMetadata, App, Builder, CustomMenuItem, Manager, Menu, MenuItem, Submenu, WindowBuilder,
+    generate_context, generate_handler, AboutMetadata, App, Builder, CustomMenuItem, Manager, Menu,
+    MenuItem, Submenu, WindowBuilder, WindowUrl,
 };
 
 fn init_menu() -> Menu {
@@ -33,20 +34,16 @@ pub fn init_app() -> App {
 
             main_window.on_menu_event(move |event| match event.menu_item_id() {
                 "settings" => {
-                    WindowBuilder::new(
-                        &handle,
-                        "settings",
-                        tauri::WindowUrl::App("#/settings".into()),
-                    )
-                    .title("settings")
-                    .build()
-                    .unwrap();
+                    WindowBuilder::new(&handle, "settings", WindowUrl::App("#/settings".into()))
+                        .title("settings")
+                        .build()
+                        .unwrap();
                 }
                 _ => {}
             });
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![])
-        .build(tauri::generate_context!())
+        .invoke_handler(generate_handler![])
+        .build(generate_context!())
         .expect("error while running tauri application")
 }
