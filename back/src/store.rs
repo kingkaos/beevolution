@@ -22,15 +22,18 @@ fn try_create_file(path: &Path) -> io::Result<()> {
     }
 }
 
+const HOME: &str = env!("HOME");
+const PKG_NAME: &str = env!("CARGO_PKG_NAME");
+
+pub fn store_path() -> String {
+    format!("{}/.config/{}/config.json", HOME, PKG_NAME)
+}
+
 pub fn init_store_file() -> bool {
     // default location of the store is ~/.config/beevolution/config.json
     // The path and file will be created if they do not exist.
-    let path_to_store = format!(
-        "{}/.config/{}/config.json",
-        env!("HOME"),
-        env!("CARGO_PKG_NAME")
-    );
-    let path_to_store = Path::new(path_to_store.as_str());
+    let path = store_path();
+    let path_to_store = Path::new(&path);
     // create folders if they don't exist
     try_create_folder(&(path_to_store.parent().unwrap()))
         .unwrap_or_else(|why| error!("Unable to create folder: {:?}", why));
