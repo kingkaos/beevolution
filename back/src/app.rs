@@ -4,6 +4,7 @@ use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
 use tauri::{generate_context, generate_handler, App, AppHandle, Builder, Manager, Runtime, Wry};
 use tauri_plugin_store::{self, StoreBuilder};
 
+use crate::database::Database;
 use crate::store::store_path;
 
 fn init_menu<R: Runtime>(handle: &AppHandle) -> tauri::Result<Menu<Wry>> {
@@ -46,6 +47,14 @@ pub fn init_app() -> App {
 
             let path = store_path();
             let mut store = StoreBuilder::new(path.as_str()).build(app.handle().clone());
+            if !store.has("database") {
+                let _ = store.insert("database".to_string(), json!(Database::default()));
+                let _ = store.save();
+            }
+            store.load().unwrap_or_else(|why| {
+                error!("Failed to load store from disk: {:?}", why);
+                panic!("Unable to initialize app.");
+            });
             Ok(())
         })
         .invoke_handler(generate_handler![])
