@@ -1,40 +1,36 @@
 use log::error;
 use serde_json::json;
-use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
-use tauri::{generate_context, generate_handler, App, AppHandle, Builder, Manager, Runtime, Wry};
+use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, SubmenuBuilder};
+use tauri::webview::WebviewWindowBuilder;
+use tauri::{
+    generate_context, generate_handler, App, AppHandle, Builder, Manager, WebviewUrl, Wry,
+};
 use tauri_plugin_store::{self, StoreBuilder};
 
 use crate::database::Database;
 use crate::store::store_path;
 
-fn init_menu<R: Runtime>(handle: &AppHandle) -> tauri::Result<Menu<Wry>> {
-    Menu::with_items(
-        handle,
-        &[
-            &Submenu::with_items(
-                handle,
-                env!("CARGO_PKG_NAME"),
-                true,
-                &[
-                    &PredefinedMenuItem::close_window(handle, None)?,
-                    #[cfg(target_os = "macos")]
-                    &MenuItem::new(handle, "Hello", true, None::<&str>)?,
-                    &PredefinedMenuItem::quit(handle, None)?,
-                ],
-            )?,
-            &Submenu::with_items(
-                handle,
-                "View",
-                true,
-                &[&PredefinedMenuItem::fullscreen(handle, None)?],
-            )?,
-        ],
-    )
+fn init_menu(handle: &AppHandle) -> Result<Menu<Wry>, tauri::Error> {
+    let menu = Menu::new(handle)?;
+    let main_menu = SubmenuBuilder::new(handle, env!("CARGO_PKG_NAME"))
+        .items(&[
+            &PredefinedMenuItem::close_window(handle, None)?,
+            #[cfg(target_os = "macos")]
+            &MenuItem::with_id(handle, "settings", "Settings", true, None::<&str>)?,
+            &PredefinedMenuItem::quit(handle, None)?,
+        ])
+        .build()?;
+    let view_menu = SubmenuBuilder::new(handle, "view")
+        .items(&[&PredefinedMenuItem::fullscreen(handle, None)?])
+        .build()?;
+
+    menu.append(&main_menu)?;
+    menu.append(&view_menu)?;
+    Ok(menu)
 }
 
 pub fn init_app() -> App {
     Builder::default()
-        .menu(|handle| init_menu::<Wry>(handle))
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
@@ -55,6 +51,25 @@ pub fn init_app() -> App {
                 error!("Failed to load store from disk: {:?}", why);
                 panic!("Unable to initialize app.");
             });
+
+            let handle = app.handle();
+            let menu = init_menu(handle)?;
+            app.set_menu(menu)?;
+
+            app.on_menu_event(move |app, event| match event.id().0.as_str() {
+                "settings" => {
+                    WebviewWindowBuilder::new(
+                        app,
+                        "settings",
+                        WebviewUrl::App("#/settings".into()),
+                    )
+                    .title("settings")
+                    .build()
+                    .unwrap();
+                }
+                _ => {}
+            });
+
             Ok(())
         })
         .invoke_handler(generate_handler![])
