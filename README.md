@@ -9,3 +9,13 @@ If the store file is incomplete, the missing components are set with default val
 ## Development
 
 `beevolution` is a tauri application which uses Rust in the back and Vue in the front (see also folder names). The most recent tauri version is used (currently: 2.0.0) which is unstable and might lead to unexpected behaviour.
+
+### Preparation
+
+Install necessary frontend modules by running from root directory:
+
+```sh
+npm install
+```
+
+Rust dependencies are loaded upon running `cargo build` from `back` folder or running `npm run tauri dev` from root directory. `npm run tauri dev` builds everything in dev mode and runs cargo build.
