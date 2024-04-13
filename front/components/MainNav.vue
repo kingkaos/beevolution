@@ -1,28 +1,7 @@
-<script setup lang="ts">
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-
-interface Item {
-  title: string
-  href: string
-}
-
-const sidebarNavItems: Item[] = [
-  {
-    title: 'Review',
-    href: '#/main/review',
-  },
-  {
-    title: 'Queen',
-    href: '#/main/queen',
-  },
-]
-</script>
-
 <template>
   <nav class="flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1">
     <Button
-      v-for="item in sidebarNavItems"
+      v-for="item in navItems"
       :key="item.title"
       as="a"
       :href="item.href"
@@ -36,3 +15,20 @@ const sidebarNavItems: Item[] = [
     </Button>
   </nav>
 </template>
+
+<script setup lang="ts">
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import type { Item } from '@/types'
+
+const navItems: Item[] = [
+  {
+    title: 'Queen',
+    href: '#/main/queen',
+  },
+  {
+    title: 'Review',
+    href: '#/main/review',
+  },
+]
+</script>
