@@ -36,9 +36,9 @@ pub fn init_app() -> App {
         .setup(|app| {
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
-                let window = app.get_webview("main").unwrap();
-                window.open_devtools();
-                window.close_devtools();
+                let main_window = app.get_webview("main").unwrap();
+                main_window.open_devtools();
+                main_window.close_devtools();
             }
 
             let path = store_path();
@@ -66,6 +66,12 @@ pub fn init_app() -> App {
                     .title("settings")
                     .build()
                     .unwrap();
+                    #[cfg(debug_assertions)]
+                    {
+                        let settings_window = app.get_webview("settings").unwrap();
+                        settings_window.open_devtools();
+                        settings_window.close_devtools();
+                    }
                 }
                 _ => {}
             });
