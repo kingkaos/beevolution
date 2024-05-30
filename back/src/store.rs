@@ -35,12 +35,11 @@ pub fn init_store_file() -> bool {
     let path = store_path();
     let path_to_store = Path::new(&path);
     // create folders if they don't exist
-    try_create_folder(&(path_to_store.parent().unwrap()))
+    try_create_folder(path_to_store.parent().unwrap())
         .unwrap_or_else(|why| error!("Unable to create folder: {:?}", why));
 
     // try create store file if it doesn't exist
-    try_create_file(&path_to_store)
-        .unwrap_or_else(|why| error!("Unable to create file: {:?}", why));
+    try_create_file(path_to_store).unwrap_or_else(|why| error!("Unable to create file: {:?}", why));
 
     // returns true if file exists else false
     Path::new(&path_to_store).exists()

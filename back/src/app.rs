@@ -56,8 +56,8 @@ pub fn init_app() -> App {
             let menu = init_menu(handle)?;
             app.set_menu(menu)?;
 
-            app.on_menu_event(move |app, event| match event.id().0.as_str() {
-                "settings" => {
+            app.on_menu_event(move |app, event| {
+                if event.id().0.as_str() == "settings" {
                     WebviewWindowBuilder::new(
                         app,
                         "settings",
@@ -73,7 +73,6 @@ pub fn init_app() -> App {
                         settings_window.close_devtools();
                     }
                 }
-                _ => {}
             });
 
             Ok(())
